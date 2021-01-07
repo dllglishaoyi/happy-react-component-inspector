@@ -1,0 +1,33 @@
+:local {
+  .container {
+    padding: 8px;
+    border-top: 1px solid whitesmoke;
+    button {
+      color: #0084ff;
+    }
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .filterItem {
+    border-top: 1px solid whitesmoke;
+    padding: 5px 2px;
+    .filterInput {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 5px;
+      // width: 80px;
+      outline: none;
+      background: rgba($color: #000000, $alpha: 0);
+      border: 1px solid white;
+    }
+    .filterInput::placeholder {
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: #bbbbbb;
+      opacity: 1; /* Firefox */
+    }
+  }
+}

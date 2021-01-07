@@ -1,0 +1,7 @@
+{
+  "extends": "react-app",
+  "globals": {
+    "chrome": true
+  },
+  "webextensions": true
+}
