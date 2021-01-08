@@ -30,10 +30,22 @@ export default class Monitor extends React.Component {
     try {
       const ReactDom = window.ReactDom;
       const dom = ReactDom.findDOMNode(this);
-      let sourceRes = null;
+      let sourceLocation = null;
       if (dom) {
         try {
-          sourceRes = await getSourceLocation(sourceTrace);
+          const fiber = getElementFiber(dom);
+          if (fiber && fiber._debugSource) {
+            const { fileName, lineNumber, columnNumber } = fiber._debugSource;
+            sourceLocation = getEditorScheme(
+              fileName,
+              lineNumber,
+              columnNumber
+            );
+          } else {
+            // const sourceRes = await getSourceLocation(sourceTrace);
+            // const { source, line, column } = sourceRes;
+            // sourceLocation = getEditorScheme(source, line, column);
+          }
         } catch (error) {
           console.log('getSourceLocation faild', error);
         }
@@ -42,10 +54,8 @@ export default class Monitor extends React.Component {
           dom,
           displayName,
           isFromFilter,
-          source:
-            sourceRes && sourceRes.source
-              ? getEditorScheme(sourceRes.source)
-              : '',
+          source: sourceLocation,
+          sourceTrace,
         });
       }
     } catch (e) {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Overlay from './Overlay';
+import { checkCodeInEditor } from './utils';
 export const SHOPEE_COMPONENT_FILTERS = '__SHOPEE_COMPONENT_FILTERS__';
 const filtersString = localStorage.getItem(SHOPEE_COMPONENT_FILTERS);
 const filters = filtersString ? JSON.parse(filtersString) : [];
@@ -23,6 +24,7 @@ export type TraceElement = {
   source: string;
   inspected: boolean;
   overlay?: Overlay;
+  sourceTrace?: any;
 };
 class Filter {
   _enable = true;
@@ -73,6 +75,11 @@ class Store {
           overlay.onLeave(() => {
             if (!element.inspected) {
               this.hideElementOvlerLay(element);
+            }
+          });
+          overlay.onClickName(() => {
+            if (!element.source && element.sourceTrace) {
+              checkCodeInEditor(element.sourceTrace);
             }
           });
           overlay.hide();

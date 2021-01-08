@@ -126,6 +126,7 @@ class OverlayTip {
       borderRight: '1px solid #aaaaaa',
       paddingRight: '0.5rem',
       marginRight: '0.5rem',
+      cursor: 'pointer',
     });
     this.dimSpan = doc.createElement('span');
     this.tip.appendChild(this.dimSpan);
@@ -200,7 +201,12 @@ export default class Overlay {
     const hoveredElements = document.querySelectorAll(':hover');
     return Array.from(hoveredElements).some((r) => elements.includes(r));
   }
-
+  onClickName(callback: () => void) {
+    this.tip.tip &&
+      this.tip.tip.addEventListener('click', () => {
+        callback && callback();
+      });
+  }
   onLeave(callback: () => void) {
     this.tip.tip &&
       this.tip.tip.addEventListener('mouseleave', () => {

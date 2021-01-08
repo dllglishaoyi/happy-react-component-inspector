@@ -1,3 +1,4 @@
+// @ts-nocheck
 import sourceMap from 'source-map';
 import ignoreListConfig from './ignoreList';
 export const SHOPEE_COMPONENT_FILTERS = '__SHOPEE_COMPONENT_FILTERS__';
@@ -116,10 +117,15 @@ export function checkFilter(type: any) {
   );
 }
 
-export function getEditorScheme(path: string, editor: string = 'vscode') {
+export function getEditorScheme(
+  path: string,
+  line: number,
+  column: number,
+  editor: string = 'vscode'
+) {
   switch (editor) {
     case 'vscode':
-      return `vscode://file${path}`;
+      return `vscode://file${path}:${column}:${line}`;
       break;
     case 'atom':
       return `atom://open?url=file://${path}`;
@@ -135,3 +141,10 @@ export function isIgnored(name: string) {
   }
   return false;
 }
+
+export const checkCodeInEditor = async (sourceTrace: Error) => {
+  const sourceRes = await getSourceLocation(sourceTrace);
+  const { source, line, column } = sourceRes;
+  const sourceLocation = getEditorScheme(source, line, column);
+  window.location.href = sourceLocation;
+};
