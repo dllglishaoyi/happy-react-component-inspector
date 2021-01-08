@@ -44,45 +44,12 @@ class Store {
     if (toggle) {
       this._elementSet.forEach((element: TraceElement) => {
         if (element.dom.offsetParent) {
-          const overlay = new Overlay();
-          element.overlay = overlay;
           !devilmode &&
-            element.dom.addEventListener(
-              'mouseenter',
-              (e) => {
-                this.showElementOvlerLay(element);
-                this.setOverlayBorder(element);
-              },
-              true
-            );
-          overlay.inspect(
-            [element.dom],
-            element.displayName,
-            element.source,
-            () => {
-              //  func: getElementFiber(element.dom).return.elementType,
-              const fiber = getElementFiber(element.dom);
-              window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
-              window.postMessage(
-                {
-                  message: 'inspectsource',
-                  source: 'happy-inspector',
-                },
-                '*'
-              );
-            }
-          );
-          overlay.onLeave(() => {
-            if (!element.inspected) {
-              this.hideElementOvlerLay(element);
-            }
-          });
-          overlay.onClickName(() => {
-            if (!element.source && element.sourceTrace) {
-              checkCodeInEditor(element.sourceTrace);
-            }
-          });
-          overlay.hide();
+            element.dom.addEventListener('mouseenter', (e) => {
+              e.stopPropagation();
+              this.showElementOvlerLay(element);
+              this.setOverlayBorder(element);
+            });
         }
       });
     } else {
@@ -124,6 +91,36 @@ class Store {
   showElementOvlerLay = (element: TraceElement) => {
     if (element && element.overlay) {
       element.overlay.show();
+    } else {
+      const overlay = new Overlay();
+      element.overlay = overlay;
+      overlay.inspect(
+        [element.dom],
+        element.displayName,
+        element.source,
+        () => {
+          //  func: getElementFiber(element.dom).return.elementType,
+          const fiber = getElementFiber(element.dom);
+          window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
+          window.postMessage(
+            {
+              message: 'inspectsource',
+              source: 'happy-inspector',
+            },
+            '*'
+          );
+        }
+      );
+      overlay.onLeave(() => {
+        if (!element.inspected) {
+          this.hideElementOvlerLay(element);
+        }
+      });
+      overlay.onClickName(() => {
+        if (!element.source && element.sourceTrace) {
+          checkCodeInEditor(element.sourceTrace);
+        }
+      });
     }
   };
   hideElementOvlerLay = (element: TraceElement) => {
