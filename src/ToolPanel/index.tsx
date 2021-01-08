@@ -83,12 +83,7 @@ const Panel = () => {
         {toggle && expended && (
           <div>
             <div className={s.panelHeader}>
-              <div>
-                {toggle && (
-                  <FoldIcon onclick={toggleExpended} expended={expended} />
-                )}{' '}
-                Devil Mode
-              </div>
+              <div>Devil Mode</div>
               <Switch
                 checked={!!devilMode}
                 onChange={(event) => {
