@@ -33,6 +33,7 @@ class Filter {
   constructor() {}
 }
 class Store {
+  isOn = false;
   _elementSet = new Set();
   constructor() {}
   addElement = (element: TraceElement) => {
@@ -41,14 +42,17 @@ class Store {
     }
   };
   toggleInspector = (toggle: boolean) => {
+    this.isOn = toggle;
     if (toggle) {
       this._elementSet.forEach((element: TraceElement) => {
         if (element.dom.offsetParent) {
           !devilmode &&
             element.dom.addEventListener('mouseenter', (e) => {
               e.stopPropagation();
-              this.showElementOvlerLay(element);
-              this.setOverlayBorder(element);
+              if (this.isOn) {
+                this.showElementOvlerLay(element);
+                this.setOverlayBorder(element);
+              }
             });
         }
       });
@@ -89,7 +93,7 @@ class Store {
     }
   };
   showElementOvlerLay = (element: TraceElement) => {
-    if (element && element.overlay) {
+    if (element.overlay) {
       element.overlay.show();
     } else {
       const overlay = new Overlay();
@@ -131,10 +135,9 @@ class Store {
   onSelectAll = (checked: boolean) => {
     this._elementSet.forEach((element: TraceElement) => {
       element.inspected = checked;
-      const overlay = element.overlay;
-      if (overlay) {
-        checked ? overlay.show() : overlay.hide();
-      }
+      checked
+        ? this.showElementOvlerLay(element)
+        : this.hideElementOvlerLay(element);
     });
   };
   reducer = (state: any, action: any) => {
