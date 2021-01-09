@@ -28,12 +28,12 @@ class OverlayRect {
     this.padding.style.borderColor = overlayStyles.padding;
     this.content.style.backgroundColor = overlayStyles.background;
     onClick && this.node.addEventListener('click', onClick);
-
     Object.assign(this.node.style, {
       borderColor: overlayStyles.margin,
       position: 'absolute',
     });
-
+    container.style.pointerEvents = 'none';
+    this.node.style.pointerEvents = 'none';
     this.node.style.zIndex = '10000000';
 
     this.node.appendChild(this.border);
