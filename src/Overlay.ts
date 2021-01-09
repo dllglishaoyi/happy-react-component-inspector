@@ -28,12 +28,12 @@ class OverlayRect {
     this.padding.style.borderColor = overlayStyles.padding;
     this.content.style.backgroundColor = overlayStyles.background;
     onClick && this.node.addEventListener('click', onClick);
+
     Object.assign(this.node.style, {
       borderColor: overlayStyles.margin,
       position: 'absolute',
     });
-    container.style.pointerEvents = 'none';
-    this.node.style.pointerEvents = 'none';
+
     this.node.style.zIndex = '10000000';
 
     this.node.appendChild(this.border);
@@ -118,6 +118,7 @@ class OverlayTip {
     });
 
     this.nameSpan = doc.createElement('span');
+    this.nameSpan.style.pointerEvents = 'auto';
     this.sourceLocation = doc.createElement('a');
     this.sourceLocation.appendChild(this.nameSpan);
     this.tip.appendChild(this.sourceLocation);
@@ -134,6 +135,15 @@ class OverlayTip {
       color: '#d7d7d7',
     });
 
+    this.tip.addEventListener(
+      'mouseover',
+      (e) => {
+        console.log('hahahah');
+        e.stopPropagation();
+        return;
+      },
+      true
+    );
     this.tip.style.zIndex = '99999999';
     container.appendChild(this.tip);
   }
@@ -193,6 +203,7 @@ export default class Overlay {
 
     this.tip = new OverlayTip(doc, this.container);
     this.rects = [];
+    this.container.style.pointerEvents = 'none';
 
     doc.body.appendChild(this.container);
   }
@@ -206,6 +217,14 @@ export default class Overlay {
       this.tip.tip.addEventListener('click', () => {
         callback && callback();
       });
+  }
+  onMouseOver(callback: (e: any) => void) {
+    this.rects.forEach((rect) => {
+      rect.node &&
+        rect.node.addEventListener('mouseover', (e) => {
+          callback && callback(e);
+        });
+    });
   }
   onLeave(callback: () => void) {
     this.tip.tip &&
@@ -369,7 +388,7 @@ export default class Overlay {
 function findTipPos(dims, bounds, tipSize) {
   const tipHeight = Math.max(tipSize.height, 20);
   const tipWidth = Math.max(tipSize.width, 60);
-  const margin = 1;
+  const margin = 0;
 
   let top;
 

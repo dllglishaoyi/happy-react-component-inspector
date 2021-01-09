@@ -49,14 +49,15 @@ export default class Monitor extends React.Component {
         } catch (error) {
           console.log('getSourceLocation faild', error);
         }
-
-        store.addElement({
+        const Element = {
           dom,
           displayName,
           isFromFilter,
           source: sourceLocation,
           sourceTrace,
-        });
+        };
+        dom.__Element__ = Element;
+        store.addElement(Element);
       }
     } catch (e) {
       console.log('======Inspector Wrap Failed======', e);

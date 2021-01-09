@@ -33,6 +33,7 @@ class Filter {
   constructor() {}
 }
 class Store {
+  currentDom = null;
   isOn = false;
   _elementSet = new Set();
   constructor() {}
@@ -41,42 +42,41 @@ class Store {
       this._elementSet.add(element);
     }
   };
+  onClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // console.log(event.target);
+    console.log(
+      'this._elementSet.has(element)',
+      event.target,
+      this._elementSet.has(event.currentTarget)
+    );
+  };
   toggleInspector = (toggle: boolean) => {
     this.isOn = toggle;
     if (toggle) {
+      // window.addEventListener('click', this.onClick, true);
       this._elementSet.forEach((element: TraceElement) => {
-        if (element.dom.offsetParent) {
-          !devilmode &&
-            element.dom.addEventListener('mouseenter', (e) => {
-              e.stopPropagation();
-              if (this.isOn) {
-                this.showElementOvlerLay(element);
-                this.setOverlayBorder(element);
-              }
-            });
-        }
+        element.dom.addEventListener('mouseover', this.onDomMouseOver);
+        element.dom.addEventListener('mouseout', this.onDomMouseOut);
       });
     } else {
       this._elementSet.forEach((element) => {
         element.overlay && element.overlay.remove();
         element.overlay = null;
+        element.dom.removeEventListener('mouseover', this.onDomMouseOver);
+        element.dom.removeEventListener('mouseout', this.onDomMouseOut);
       });
     }
   };
+  attachEvent = (element: TraceElement) => {};
   initialState = {
     elementSet: this._elementSet,
     filters: filters,
   };
   setInspect = (element: TraceElement, inspect: boolean) => {
     if (inspect) {
-      if (!element.overlay) {
-        element.overlay = new Overlay();
-      }
-      element.overlay.inspect(
-        [element.dom],
-        element.displayName,
-        element.source
-      );
+      showElementOvlerLay(element);
     } else {
       element.overlay && element.overlay.remove();
       element.overlay = null;
@@ -115,20 +115,65 @@ class Store {
           );
         }
       );
-      overlay.onLeave(() => {
-        if (!element.inspected) {
-          this.hideElementOvlerLay(element);
-        }
-      });
+
       overlay.onClickName(() => {
-        if (!element.source && element.sourceTrace) {
+        if (element.source) {
+          window.location.href = element.source;
+        } else if (element.sourceTrace) {
           checkCodeInEditor(element.sourceTrace);
         }
       });
     }
+    element.dom.addEventListener('click', this.onDomClick, true);
+  };
+  onDomClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const element = e.currentTarget.__Element__;
+    // console.log('xxxx', element);
+    const fiber = getElementFiber(element.dom);
+    window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
+    window.postMessage(
+      {
+        message: 'inspectsource',
+        source: 'happy-inspector',
+      },
+      '*'
+    );
+    if (element.source) {
+      window.location.href = element.source;
+    } else if (element.sourceTrace) {
+      checkCodeInEditor(element.sourceTrace);
+    }
+  };
+  onDomMouseOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const element = e.currentTarget.__Element__;
+    if (this.currentDom != element) {
+      this.showElementOvlerLay(element);
+      if (this.currentDom && !this.currentDom.inspected) {
+        this.hideElementOvlerLay(this.currentDom);
+      }
+      this.currentDom = element;
+    }
+  };
+  onDomMouseOut = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget.__Element__;
+    var e = event.toElement || event.relatedTarget;
+    if (e.parentNode == this || e == this) {
+      return;
+    }
+    if (!element.inspected) {
+      this.hideElementOvlerLay(element);
+      this.currentDom = null;
+    }
   };
   hideElementOvlerLay = (element: TraceElement) => {
     if (element && element.overlay) {
+      element.dom.removeEventListener('click', this.onDomClick, true);
       element.overlay.hide();
     }
   };
