@@ -163,7 +163,7 @@ class Store {
     event.stopPropagation();
     const element = event.currentTarget.__Element__;
     var e = event.toElement || event.relatedTarget;
-    if (e.parentNode == this || e == this) {
+    if (e && (e.parentNode == this || e == this)) {
       return;
     }
     if (!element.inspected) {

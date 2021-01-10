@@ -58,8 +58,9 @@ export const getSourceLocation = async (error: Error) => {
   const paths =
     error.stack &&
     error.stack.match(
-      /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
+      /((ht|f)tps?):\/\/[\w\-]+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
     );
+
   // the first path should be the component location in ganerated code
   const currentLocation = paths && paths[0] && paths[0].replace(/^\(|\)$/g, '');
   // tokens eg ['http(s)',//filepath,row,column]
