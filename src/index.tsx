@@ -58,3 +58,4 @@ if (window.React) {
   setupPannel();
   componentInspector(window.React);
 }
+exports.happyInspector = init;

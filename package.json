@@ -1,5 +1,5 @@
 {
-  "name": "chrome-extension-happy-inspector",
+  "name": "happy-react-inspector",
   "version": "0.0.1",
   "description": "A chrome extension for React Components Inspection",
   "license": "MIT",
@@ -7,8 +7,10 @@
     "type": "git",
     "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
   },
+  "main": "dist/index.bundle.js",
   "scripts": {
     "build": "node utils/build.js",
+    "build:package": "node utils/buildpackage.js",
     "start": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'"
   },
