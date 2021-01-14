@@ -44,11 +44,12 @@ function componentInspector(React: any) {
   }
 }
 function init(React: any, ReactDom: any) {
-  if (!window.ReactDom && ReactDom) {
-    window.ReactDom = ReactDom;
+  if (!window.ReactDom) {
+    window.ReactDom = ReactDom || window.ReactDom;
   }
   setupPannel();
   componentInspector(React);
+  window.__HAPPY_INSPECTOR__SETUP__ = true;
 }
 window.__HAPPY_INSPECTOR__ = {
   componentInspector,
@@ -58,4 +59,8 @@ if (window.React) {
   setupPannel();
   componentInspector(window.React);
 }
-exports.happyInspector = init;
+window.onload = function () {
+  if (!window.__HAPPY_INSPECTOR__SETUP__) {
+    init(window.React, window.ReactDom || ReactDOM);
+  }
+};

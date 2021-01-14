@@ -28,7 +28,7 @@ export default class Monitor extends React.Component {
     const { sourceTrace, displayName, isFromFilter } = this.props;
     // eslint-disable-next-line react/no-find-dom-node
     try {
-      const ReactDom = window.ReactDom;
+      const ReactDom = window.ReactDom || window.ReactDOM;
       const dom = ReactDom.findDOMNode(this);
       let sourceLocation = null;
       if (dom) {

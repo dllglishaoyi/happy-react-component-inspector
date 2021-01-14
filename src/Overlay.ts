@@ -138,7 +138,6 @@ class OverlayTip {
     this.tip.addEventListener(
       'mouseover',
       (e) => {
-        console.log('hahahah');
         e.stopPropagation();
         return;
       },

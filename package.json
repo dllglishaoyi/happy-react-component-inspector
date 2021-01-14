@@ -22,7 +22,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hot-loader": "^4.13.0",
-    "react-use": "^15.3.4"
+    "react-use": "^15.3.4",
+    "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

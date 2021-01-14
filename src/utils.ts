@@ -1,6 +1,8 @@
 // @ts-nocheck
 import sourceMap from 'source-map';
+import StackTrace from 'stacktrace-js';
 import ignoreListConfig from './ignoreList';
+
 export const SHOPEE_COMPONENT_FILTERS = '__SHOPEE_COMPONENT_FILTERS__';
 const filtersString = localStorage.getItem(SHOPEE_COMPONENT_FILTERS);
 const filters = filtersString ? JSON.parse(filtersString) : [];
@@ -73,6 +75,7 @@ export const getSourceLocation = async (error: Error) => {
   const ganeratedFileKey = `ganeratedFileKey:${filePath}`;
   // const mapString = localStorage.getItem(ganeratedFileKey);
   let rawSourceMap = sourceMapCache[ganeratedFileKey];
+  console.log('rawSourceMap', !!rawSourceMap);
   if (!rawSourceMap) {
     const response = await fetch(filePath);
     const body = await response.text();
@@ -82,7 +85,7 @@ export const getSourceLocation = async (error: Error) => {
       : filePath.split('/').slice(0, -1).join('/') + `/${mapPath}`;
     const mapPesponse = await fetch(mapRealPath);
     rawSourceMap = await mapPesponse.json();
-    sourceMapCache[ganeratedFileKey] = rawSourceMap;
+
     // try {
     //   localStorage.setItem(ganeratedFileKey, JSON.stringify(rawSourceMap));
     // } catch (e) {
@@ -90,10 +93,14 @@ export const getSourceLocation = async (error: Error) => {
     // }
   }
   const consumer = await new sourceMap.SourceMapConsumer(rawSourceMap);
+
   const res = consumer.originalPositionFor({
     line: row,
     column: column,
   });
+  if (res && res.source) {
+    sourceMapCache[ganeratedFileKey] = rawSourceMap;
+  }
   return res;
 };
 
@@ -144,6 +151,10 @@ export function isIgnored(name: string) {
 }
 
 export const checkCodeInEditor = async (sourceTrace: Error) => {
+  // console.log('checkCodeInEditor');
+  // StackTrace.fromError(sourceTrace).then((stackframes) => {
+  //   console.log('stackframes', stackframes);
+  // });
   const sourceRes = await getSourceLocation(sourceTrace);
   const { source, line, column } = sourceRes;
   const sourceLocation = getEditorScheme(source, line, column);

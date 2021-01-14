@@ -7,8 +7,10 @@ const filters = filtersString ? JSON.parse(filtersString) : [];
 const devilmode = localStorage.getItem('__devil_mode__') === 'true';
 
 export const getElementFiber = (element: any): any => {
-  const fiberKey = Object.keys(element).find((key) =>
-    key.startsWith('__reactInternalInstance$')
+  const fiberKey = Object.keys(element).find(
+    (key) =>
+      key.startsWith('__reactInternalInstance$') ||
+      key.startsWith('__reactFiber$')
   );
 
   if (fiberKey) {
@@ -120,6 +122,16 @@ class Store {
         if (element.source) {
           window.location.href = element.source;
         } else if (element.sourceTrace) {
+          const fiber = getElementFiber(element.dom);
+          window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
+          console.log('xxxx', fiber, element.dom);
+          window.postMessage(
+            {
+              message: 'inspectsource',
+              source: 'happy-inspector',
+            },
+            '*'
+          );
           checkCodeInEditor(element.sourceTrace);
         }
       });
@@ -130,9 +142,9 @@ class Store {
     e.preventDefault();
     e.stopPropagation();
     const element = e.currentTarget.__Element__;
-    // console.log('xxxx', element);
     const fiber = getElementFiber(element.dom);
     window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
+    console.log('xxxx', fiber, element.dom);
     window.postMessage(
       {
         message: 'inspectsource',
