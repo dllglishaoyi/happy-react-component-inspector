@@ -144,7 +144,6 @@ class Store {
     const element = e.currentTarget.__Element__;
     const fiber = getElementFiber(element.dom);
     window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
-    console.log('xxxx', fiber, element.dom);
     window.postMessage(
       {
         message: 'inspectsource',
@@ -152,10 +151,16 @@ class Store {
       },
       '*'
     );
-    if (element.source) {
-      window.location.href = element.source;
-    } else if (element.sourceTrace) {
-      checkCodeInEditor(element.sourceTrace);
+    if (
+      location.hostname === 'localhost' ||
+      location.hostname === '127.0.0.1' ||
+      location.hostname === ''
+    ) {
+      if (element.source) {
+        window.location.href = element.source;
+      } else if (element.sourceTrace) {
+        checkCodeInEditor(element.sourceTrace);
+      }
     }
   };
   onDomMouseOver = (e) => {
