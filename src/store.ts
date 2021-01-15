@@ -1,24 +1,15 @@
 // @ts-nocheck
 import Overlay from './Overlay';
-import { checkCodeInEditor } from './utils';
+import {
+  checkCodeInEditor,
+  isLocalEnv,
+  checkCodeInDevtool,
+  getElementFiber,
+} from './utils';
 export const SHOPEE_COMPONENT_FILTERS = '__SHOPEE_COMPONENT_FILTERS__';
 const filtersString = localStorage.getItem(SHOPEE_COMPONENT_FILTERS);
 const filters = filtersString ? JSON.parse(filtersString) : [];
 const devilmode = localStorage.getItem('__devil_mode__') === 'true';
-
-export const getElementFiber = (element: any): any => {
-  const fiberKey = Object.keys(element).find(
-    (key) =>
-      key.startsWith('__reactInternalInstance$') ||
-      key.startsWith('__reactFiber$')
-  );
-
-  if (fiberKey) {
-    return element[fiberKey];
-  }
-
-  return null;
-};
 
 export type TraceElement = {
   dom: HTMLElement;
@@ -106,15 +97,7 @@ class Store {
         element.source,
         () => {
           //  func: getElementFiber(element.dom).return.elementType,
-          const fiber = getElementFiber(element.dom);
-          window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
-          window.postMessage(
-            {
-              message: 'inspectsource',
-              source: 'happy-inspector',
-            },
-            '*'
-          );
+          checkCodeInDevtool(element);
         }
       );
 
@@ -122,17 +105,10 @@ class Store {
         if (element.source) {
           window.location.href = element.source;
         } else if (element.sourceTrace) {
-          const fiber = getElementFiber(element.dom);
-          window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
-          console.log('xxxx', fiber, element.dom);
-          window.postMessage(
-            {
-              message: 'inspectsource',
-              source: 'happy-inspector',
-            },
-            '*'
-          );
-          checkCodeInEditor(element.sourceTrace);
+          checkCodeInDevtool(element);
+          if (isLocalEnv()) {
+            checkCodeInEditor(element.sourceTrace);
+          }
         }
       });
     }
@@ -142,20 +118,9 @@ class Store {
     e.preventDefault();
     e.stopPropagation();
     const element = e.currentTarget.__Element__;
-    const fiber = getElementFiber(element.dom);
-    window.__SOURCE_TO_INSPECT__ = fiber && fiber.return.elementType;
-    window.postMessage(
-      {
-        message: 'inspectsource',
-        source: 'happy-inspector',
-      },
-      '*'
-    );
-    if (
-      location.hostname === 'localhost' ||
-      location.hostname === '127.0.0.1' ||
-      location.hostname === ''
-    ) {
+    console.log(element, e);
+    checkCodeInDevtool(element);
+    if (isLocalEnv()) {
       if (element.source) {
         window.location.href = element.source;
       } else if (element.sourceTrace) {

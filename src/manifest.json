@@ -1,5 +1,5 @@
 {
-  "name": "React Component Inspector",
+  "name": "Happy Inspector",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "icon-new-34.png"

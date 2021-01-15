@@ -160,3 +160,38 @@ export const checkCodeInEditor = async (sourceTrace: Error) => {
   const sourceLocation = getEditorScheme(source, line, column);
   window.location.href = sourceLocation;
 };
+
+export const getElementFiber = (element: any): any => {
+  const fiberKey = Object.keys(element).find(
+    (key) =>
+      key.startsWith('__reactInternalInstance$') ||
+      key.startsWith('__reactFiber$')
+  );
+
+  if (fiberKey) {
+    return element[fiberKey];
+  }
+
+  return null;
+};
+
+export function isLocalEnv() {
+  return (
+    location.hostname === 'localhost' ||
+    location.hostname === '127.0.0.1' ||
+    location.hostname === ''
+  );
+}
+
+export function checkCodeInDevtool(element) {
+  const fiber = getElementFiber(element.dom);
+  window.__SOURCE_TO_INSPECT__ =
+    fiber && (fiber.return.elementType || fiber.return.type);
+  window.postMessage(
+    {
+      message: 'inspectsource',
+      source: 'happy-inspector',
+    },
+    '*'
+  );
+}
