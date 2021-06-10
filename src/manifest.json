@@ -1,7 +1,6 @@
 {
   "name": "Happy Inspector",
   "browser_action": {
-    "default_popup": "popup.html",
     "default_icon": "icon-new-34.png"
   },
   "devtools_page": "devtools.html",
@@ -30,6 +29,11 @@
     "icon-128.png",
     "icon-34.png",
     "index.bundle.js"
+  ],
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*"
   ],
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"

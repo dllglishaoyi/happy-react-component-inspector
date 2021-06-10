@@ -69,7 +69,7 @@ const Panel = () => {
             {toggle && (
               <FoldIcon onclick={toggleExpended} expended={expended} />
             )}{' '}
-            Happy Inspector
+            Happy Inspector!
           </div>
           <Switch
             checked={state.checkedB}
@@ -82,7 +82,7 @@ const Panel = () => {
         </div>
         {toggle && expended && (
           <div>
-            <div className={s.panelHeader}>
+            {/* <div className={s.panelHeader}>
               <div>Devil Mode</div>
               <Switch
                 checked={!!devilMode}
@@ -92,7 +92,7 @@ const Panel = () => {
                 }}
                 color="primary"
               />
-            </div>
+            </div> */}
             <div className={s.listItem}>
               <input
                 value={filterText}
@@ -100,10 +100,10 @@ const Panel = () => {
                   setFilterText(event.target.value);
                 }}
                 type="search"
-                placeholder="input name to filter"
+                placeholder="Search a component"
               />
             </div>
-            <div className={s.listItem}>
+            {/* <div className={s.listItem}>
               <label>
                 <input
                   onChange={(event) => {
@@ -117,16 +117,18 @@ const Panel = () => {
                 />
                 &nbsp;&nbsp; Select All
               </label>
-            </div>
+            </div> */}
             <div className={s.componentsList}>
               {Array.from(state.elementSet)
                 .filter((element: any) => {
                   return (
+                    filterText &&
                     element.displayName.includes(filterText) &&
                     element.dom &&
                     element.dom.offsetParent
                   );
                 })
+                .slice(0, 10)
                 .map((element: any, index: number) => (
                   <div
                     onMouseOver={() => {
@@ -165,7 +167,7 @@ const Panel = () => {
                   </div>
                 ))}
             </div>
-            <Filters
+            {/* <Filters
               onAdd={() => {
                 dispatch({
                   type: 'addFilter',
@@ -197,7 +199,7 @@ const Panel = () => {
                 });
               }}
               filters={state.filters}
-            />
+            /> */}
           </div>
         )}
       </div>

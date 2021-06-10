@@ -2,7 +2,7 @@ import { getDisplayName, checkFilter, isIgnored } from './utils';
 
 import { setupPannel } from './ToolPanel';
 import AgentComponent from './AgentComponent';
-const devilmode = localStorage.getItem('__devil_mode__') === 'true';
+const devilmode = true; //localStorage.getItem('__devil_mode__') === 'true';
 function componentInspector(React: any) {
   const oriCreat = React.createElement;
   if (React.createElement && !React.createElement.__IS_REPLACED__) {
@@ -47,7 +47,7 @@ function init(React: any, ReactDom: any) {
   if (!window.ReactDom) {
     window.ReactDom = ReactDom || window.ReactDom;
   }
-  setupPannel();
+  // setupPannel();
   componentInspector(React);
   window.__HAPPY_INSPECTOR__SETUP__ = true;
 }
@@ -55,12 +55,16 @@ window.__HAPPY_INSPECTOR__ = {
   componentInspector,
   init,
 };
-if (window.React) {
-  setupPannel();
-  componentInspector(window.React);
-}
+// if (window.React) {
+//   setupPannel();
+//   componentInspector(window.React);
+// }
 window.onload = function () {
   if (!window.__HAPPY_INSPECTOR__SETUP__) {
     init(window.React, window.ReactDom || ReactDOM);
   }
+};
+// @ts-expect-error
+window.__INIT_HAPPY_INSPECTOR__ = () => {
+  setupPannel();
 };
